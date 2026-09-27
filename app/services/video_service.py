@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from moviepy.editor import AudioFileClip, ImageClip, concatenate_videoclips
+from moviepy.editor import AudioFileClip, ImageClip, VideoFileClip, concatenate_videoclips
 
 from app.config import OUTPUT_DIR
 
@@ -35,10 +35,10 @@ class VideoService:
     def render_long_video(self, scenes, scene_video_paths) -> str:
         clips = []
         for scene in scenes:
-            for path in scene_video_paths:
-                if f"scene_{scene.index:03d}" in path:
-                    clips.append(VideoFileClip(path))
-                    break
+            scene_key = f"scene_{scene.index:03d}"
+            matching_path = next((path for path in scene_video_paths if scene_key in path), None)
+            if matching_path:
+                clips.append(VideoFileClip(matching_path))
 
         if not clips:
             raise RuntimeError("No scene videos were generated. Check the pipeline inputs.")
